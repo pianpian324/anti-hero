@@ -17,23 +17,43 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+code {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+@layer components {
+  .quiz-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+  
+  .quiz-button-primary {
+    @apply quiz-button bg-primary hover:bg-primary-hover text-white shadow-sm hover:shadow-md;
+  }
+  
+  .quiz-button-secondary {
+    @apply quiz-button bg-secondary hover:bg-secondary/90 text-white;
+  }
+  
+  .quiz-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-200;
+  }
+  
+  .quiz-input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+    focus:border-primary focus:ring-1 focus:ring-primary dark:bg-gray-700 
+    dark:text-white transition-colors duration-200;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-
-@media (prefers-reduced-motion: no-preference) {
   .spin-slow {
-    animation: ani-spin-slow infinite 20s linear;
+    animation: spin 20s linear infinite;
   }
 }
 
-@keyframes ani-spin-slow {
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
