@@ -122,7 +122,7 @@ export default function QuizPage() {
             Web5 Quiz Challenge
           </h1>
           <div className="flex justify-center">
-            <ConnectWallet onConnected={() => setIsConnected(true)} />
+            <ConnectWallet/>
           </div>
         </div>
 

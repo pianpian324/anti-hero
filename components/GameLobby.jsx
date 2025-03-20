@@ -24,7 +24,7 @@ export default function GameLobby({ isConnected, onConnect }) {
           <p className="text-gray-600 dark:text-gray-400">
             Connect your wallet to start playing
           </p>
-          <ConnectWallet onConnect={onConnect} />
+          <ConnectWallet/>
         </div>
       ) : (
         <div className="space-y-6 w-full text-center">
