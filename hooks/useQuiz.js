@@ -7,8 +7,10 @@ export function useQuiz() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [questionStates, setQuestionStates] = useState({}); // 记录题目状态
+  const [questionStates, setQuestionStates] = useState({});
   const [score, setScore] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [timeBonus, setTimeBonus] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [timeLeft, setTimeLeft] = useState(5);
@@ -47,6 +49,13 @@ export function useQuiz() {
     }
   }, []);
 
+  // 检查答案是否正确
+  const checkAnswer = useCallback((questionId, selectedOption) => {
+    if (!selectedOption) return false;
+    const question = questions.find(q => q.id === questionId);
+    return question?.correctAnswer === selectedOption;
+  }, [questions]);
+
   // 检查题目是否已完成
   const isQuestionCompleted = useCallback((questionId) => {
     return questionStates[questionId]?.completed || false;
@@ -82,6 +91,9 @@ export function useQuiz() {
       return;
     }
 
+    const isCorrect = checkAnswer(questionId, selectedOption);
+    const currentTimeBonus = Math.max(0, timeLeft * 2); // 剩余时间 × 2 作为时间奖励
+
     setSelectedAnswers(prev => ({
       ...prev,
       [questionId]: selectedOption
@@ -95,9 +107,16 @@ export function useQuiz() {
       }
     }));
 
+    // 更新分数
+    if (isCorrect) {
+      setScore(prev => prev + 10 + currentTimeBonus);
+      setCorrectAnswers(prev => prev + 1);
+    }
+    setTimeBonus(prev => prev + currentTimeBonus);
+
     setIsTimerActive(false);
     autoAdvance();
-  }, [autoAdvance, isQuestionCompleted, isFirstRoundComplete]);
+  }, [autoAdvance, isQuestionCompleted, isFirstRoundComplete, checkAnswer, timeLeft]);
 
   // 处理超时
   const handleTimeout = useCallback(() => {
@@ -120,25 +139,6 @@ export function useQuiz() {
       autoAdvance();
     }
   }, [currentQuestionIndex, questions, selectedAnswers, autoAdvance, isQuestionCompleted]);
-
-  // 检查答案是否正确
-  const checkAnswer = useCallback((questionId, selectedOption) => {
-    if (!selectedOption) return false;
-    const question = questions.find(q => q.id === questionId);
-    return question?.correctAnswer === selectedOption;
-  }, [questions]);
-
-  // 计算当前得分
-  const calculateScore = useCallback(() => {
-    let totalScore = 0;
-    Object.entries(selectedAnswers).forEach(([questionId, answer]) => {
-      if (checkAnswer(Number(questionId), answer)) {
-        totalScore += 10;
-      }
-    });
-    setScore(totalScore);
-    return totalScore;
-  }, [selectedAnswers, checkAnswer]);
 
   // 移动到下一题
   const nextQuestion = useCallback(() => {
@@ -194,8 +194,11 @@ export function useQuiz() {
         }
       }, 1000);
     }
+
     return () => {
-      clearInterval(timer);
+      if (timer) {
+        clearInterval(timer);
+      }
     };
   }, [isTimerActive, timeLeft, handleTimeout]);
 
@@ -211,6 +214,8 @@ export function useQuiz() {
     currentQuestion: getCurrentQuestion(),
     selectedAnswers,
     score,
+    correctAnswers,
+    timeBonus,
     progress: getProgress(),
     isTimerActive,
     isFirstRoundComplete,
@@ -219,8 +224,8 @@ export function useQuiz() {
     handleAnswerSelect,
     handleTimeout,
     checkAnswer,
-    calculateScore,
     nextQuestion,
-    previousQuestion
+    previousQuestion,
+    questions
   };
 }

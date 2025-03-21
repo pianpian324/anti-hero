@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { Header, Footer } from '@/components/SharedLayout';
 import { useQuiz } from '@/hooks/useQuiz';
 import QuizTimer from '@/components/QuizTimer';
+import ScoreBoard from '@/components/ScoreBoard';
+import PrizePool from '@/components/PrizePool';
 
 export default function QuizGame() {
   const router = useRouter();
@@ -28,7 +30,11 @@ export default function QuizGame() {
     handleTimeout,
     checkAnswer,
     nextQuestion,
-    previousQuestion
+    previousQuestion,
+    score,
+    correctAnswers,
+    questions,
+    timeBonus
   } = useQuiz();
 
   React.useEffect(() => {
@@ -111,7 +117,7 @@ export default function QuizGame() {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-8 w-full max-w-4xl mx-auto p-8 pt-16">
+      <div className="flex flex-col items-center gap-8 w-full max-w-7xl mx-auto p-8 pt-16">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Web5 Quiz Challenge
@@ -121,8 +127,19 @@ export default function QuizGame() {
           </p>
         </div>
 
-        {/* 主游戏区域 */}
-        <div className="w-full">
+        {/* 游戏区域布局 */}
+        <div className="w-full grid grid-cols-[300px_1fr_300px] gap-8">
+          {/* 左侧计分板 */}
+          <div className="h-fit sticky top-8">
+            <ScoreBoard 
+              currentScore={score}
+              correctAnswers={correctAnswers}
+              totalQuestions={questions.length}
+              timeBonus={timeBonus}
+            />
+          </div>
+
+          {/* 主游戏区域 */}
           <div className="quiz-card p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
             <div className="flex flex-col gap-4 mb-6">
               <div className="flex justify-between items-center">
@@ -173,6 +190,15 @@ export default function QuizGame() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* 右侧奖池组件 */}
+          <div className="h-fit sticky top-8">
+            <PrizePool
+              currentScore={score}
+              totalPrizePool={100}
+              minScoreRequired={100}
+            />
           </div>
         </div>
 
