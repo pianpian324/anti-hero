@@ -21,6 +21,9 @@ export default function QuizGame() {
     selectedAnswers,
     progress,
     isTimerActive,
+    isFirstRoundComplete,
+    isQuestionCompleted,
+    isQuestionTimedOut,
     handleAnswerSelect,
     handleTimeout,
     checkAnswer,
@@ -51,25 +54,50 @@ export default function QuizGame() {
   const getOptionStyle = (option) => {
     if (!currentQuestion) return '';
     
-    const isSelected = selectedAnswers[currentQuestion.id] === option;
-    const hasAnswered = selectedAnswers[currentQuestion.id];
+    const questionId = currentQuestion.id;
+    const isCompleted = isQuestionCompleted(questionId);
+    const isSelected = selectedAnswers[questionId] === option;
+    const hasAnswered = selectedAnswers[questionId] !== undefined;
+    const isCorrect = currentQuestion.correctAnswer === option;
     
+    // 基础样式
+    let baseStyle = 'p-4 text-left rounded-lg border transition-all transform';
+    
+    // 如果题目已完成（包括超时）
+    if (isCompleted) {
+      if (isCorrect) {
+        // 正确答案始终显示绿色
+        return `${baseStyle} bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700`;
+      }
+      if (isSelected) {
+        // 选择的错误答案显示红色
+        return `${baseStyle} bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700`;
+      }
+      // 其他选项变暗
+      return `${baseStyle} opacity-50 border-gray-200 dark:border-gray-600`;
+    }
+
+    // 未完成的题目
     if (!hasAnswered) {
-      return 'hover:bg-gray-50 dark:hover:bg-gray-700/50';
+      return `${baseStyle} border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:scale-[1.01]`;
     }
 
-    if (isSelected) {
-      const isCorrect = checkAnswer(currentQuestion.id, option);
-      return isCorrect 
-        ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700'
-        : 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700';
-    }
+    return baseStyle;
+  };
 
-    if (hasAnswered && option === currentQuestion.correctAnswer) {
-      return 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700';
+  // 获取题目状态文本
+  const getQuestionStatus = () => {
+    if (!currentQuestion) return '';
+    
+    const questionId = currentQuestion.id;
+    if (isQuestionTimedOut(questionId)) {
+      return '(超时未答)';
     }
-
-    return 'opacity-50';
+    if (isQuestionCompleted(questionId)) {
+      const isCorrect = checkAnswer(questionId, selectedAnswers[questionId]);
+      return isCorrect ? '(答对了)' : '(答错了)';
+    }
+    return '';
   };
 
   return (
@@ -95,18 +123,23 @@ export default function QuizGame() {
 
         {/* 主游戏区域 */}
         <div className="w-full">
-          <div className="quiz-card p-8">
+          <div className="quiz-card p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
             <div className="flex flex-col gap-4 mb-6">
               <div className="flex justify-between items-center">
                 <div className="text-2xl font-semibold text-gray-900 dark:text-white">
                   Question {progress.current}/{progress.total}
+                  <span className="ml-2 text-base font-normal text-gray-600 dark:text-gray-400">
+                    {getQuestionStatus()}
+                  </span>
                 </div>
               </div>
-              <QuizTimer 
-                duration={5} 
-                onTimeout={handleTimeout}
-                isActive={isTimerActive && !selectedAnswers[currentQuestion?.id]}
-              />
+              {!isFirstRoundComplete && !isQuestionCompleted(currentQuestion?.id) && (
+                <QuizTimer 
+                  duration={6} 
+                  onTimeout={handleTimeout}
+                  isActive={isTimerActive && !selectedAnswers[currentQuestion?.id]}
+                />
+              )}
             </div>
 
             {/* 问题区域 */}
@@ -126,9 +159,9 @@ export default function QuizGame() {
                 {!isLoading && currentQuestion && Object.entries(currentQuestion.options).map(([key, value]) => (
                   <button
                     key={key}
-                    className={`p-4 text-left rounded-lg border border-gray-200 dark:border-gray-600 transition-all transform hover:scale-[1.01] ${getOptionStyle(key)}`}
+                    className={getOptionStyle(key)}
                     onClick={() => handleOptionClick(key)}
-                    disabled={selectedAnswers[currentQuestion.id]}
+                    disabled={isQuestionCompleted(currentQuestion.id) || isFirstRoundComplete}
                   >
                     <span className="font-medium text-gray-900 dark:text-white">
                       {key}.
@@ -162,7 +195,7 @@ export default function QuizGame() {
             <button
               onClick={nextQuestion}
               className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:opacity-90 transition-opacity font-semibold disabled:opacity-50"
-              disabled={progress.current === progress.total || !selectedAnswers[currentQuestion?.id]}
+              disabled={!isQuestionCompleted(currentQuestion?.id) || progress.current === progress.total}
             >
               Next
             </button>
