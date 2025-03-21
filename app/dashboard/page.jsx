@@ -77,8 +77,8 @@ export default function Dashboard() {
         </div>
 
         {/* 游戏信息卡片 */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="quiz-card p-6">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="quiz-card p-8">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Your Stats
             </h2>
@@ -89,14 +89,48 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="quiz-card p-6">
+          <div className="quiz-card p-8">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Game Settings
             </h2>
-            <div className="space-y-2 text-gray-600 dark:text-gray-400">
-              <p>Difficulty: Normal</p>
-              <p>Time Limit: 30s</p>
-              <p>Questions: 10</p>
+            <div className="space-y-4">
+              <button onClick={() => document.getElementById('fileInput').click()} className="flex items-center gap-3 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-lg">
+                <img src="/file.svg" alt="file icon" className="w-6 h-6" />
+                知识库
+              </button>
+              <input
+                type="file"
+                id="fileInput"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    // 处理文件上传逻辑
+                    console.log('Selected file:', file);
+                  }
+                }}
+              />
+              <div className="flex flex-col space-y-2">
+                <label className="text-gray-700 dark:text-gray-300">选AI模型</label>
+                <select className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                  <option>神经二狗LLM</option>
+                  <option>通义千问</option>
+                  <option>DeepSeek V3</option>
+                  <option>DeepSeek R1</option>
+                  <option>豆包</option>
+                </select>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <label className="text-gray-700 dark:text-gray-300">AI玩家数量</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  defaultValue="1"
+                  className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              
             </div>
           </div>
         </div>
