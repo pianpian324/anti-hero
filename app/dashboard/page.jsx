@@ -78,41 +78,63 @@ export default function Dashboard() {
 
         {/* 游戏信息卡片 */}
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="quiz-card p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="quiz-card p-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
               Your Stats
             </h2>
-            <div className="space-y-2 text-gray-600 dark:text-gray-400">
-              <p>Games Played: 0</p>
-              <p>Win Rate: 0%</p>
-              <p>Total Score: 0</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="stat-item p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Games Played</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+              </div>
+              <div className="stat-item p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Win Rate</p>
+                <p className="text-2xl font-bold text-blue-500">0%</p>
+              </div>
+              <div className="stat-item p-3 bg-gray-50 dark:bg-gray-700 rounded-lg col-span-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Score</p>
+                <p className="text-2xl font-bold text-orange-500">0</p>
+              </div>
             </div>
           </div>
 
-          <div className="quiz-card p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="quiz-card p-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
               Game Settings
             </h2>
-            <div className="space-y-4">
-              <button onClick={() => document.getElementById('fileInput').click()} className="flex items-center gap-3 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors text-lg">
-                <img src="/file.svg" alt="file icon" className="w-6 h-6" />
-                知识库
-              </button>
-              <input
-                type="file"
-                id="fileInput"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    // 处理文件上传逻辑
-                    console.log('Selected file:', file);
-                  }
-                }}
-              />
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => document.getElementById('fileInput').click()} 
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  <img src="/file.svg" alt="file icon" className="w-5 h-5" />
+                  知识库
+                </button>
+                <input
+                  type="file"
+                  id="fileInput"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      console.log('Selected file:', file);
+                    }
+                  }}
+                />
+              </div>
+              
               <div className="flex flex-col space-y-2">
-                <label className="text-gray-700 dark:text-gray-300">选AI模型</label>
-                <select className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                  选AI模型
+                </label>
+                <select className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option>神经二狗LLM</option>
                   <option>通义千问</option>
                   <option>DeepSeek V3</option>
@@ -120,17 +142,19 @@ export default function Dashboard() {
                   <option>豆包</option>
                 </select>
               </div>
+              
               <div className="flex flex-col space-y-2">
-                <label className="text-gray-700 dark:text-gray-300">AI玩家数量</label>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                  AI玩家数量
+                </label>
                 <input
                   type="number"
                   min="0"
                   max="10"
                   defaultValue="1"
-                  className="px-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
-              
             </div>
           </div>
         </div>
