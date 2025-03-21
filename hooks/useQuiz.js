@@ -10,7 +10,7 @@ export function useQuiz() {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isTimerActive, setIsTimerActive] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(5);
   const transitionTimeoutRef = useRef(null);
 
   // 初始化题目
@@ -53,10 +53,10 @@ export function useQuiz() {
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setIsTimerActive(true);
-        setTimeLeft(30);
+        setTimeLeft(5);
       }
       clearTransitionTimeout();
-    }, 600);
+    }, 500);
   }, [currentQuestionIndex, questions.length, clearTransitionTimeout]);
 
   // 处理答案选择
@@ -107,7 +107,7 @@ export function useQuiz() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setIsTimerActive(true);
-      setTimeLeft(30);
+      setTimeLeft(5);
       return true;
     }
     return false;

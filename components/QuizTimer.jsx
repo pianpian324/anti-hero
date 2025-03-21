@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
-const QuizTimer = ({ duration = 10, onTimeout, isActive = true }) => {
+const QuizTimer = ({ duration = 5, onTimeout, isActive = true }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
   const timerRef = useRef(null);
   const hasTimedOut = useRef(false);
