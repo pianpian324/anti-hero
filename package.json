@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ckb-ccc/ccc": "^1.1.6",
     "@ckb-ccc/connector-react": "^1.0.0",
+    "@ckb-ccc/core": "^1.5.3",
     "next": "14.2.18",
     "react": "^18",
     "react-dom": "^18"

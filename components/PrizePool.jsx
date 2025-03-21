@@ -32,12 +32,13 @@ const PrizePool = ({
   // 处理奖励领取
   const handleClaimRewards = useCallback(async () => {
     if (!userAddress || isLoading) return;
-
+    console.log('Claiming rewards...');
     setIsLoading(true);
     try {
       // 根据分数发放不同奖励
       if (currentScore >= 100 && !claimedRewards.sbt) {
-        const sbtResult = await RewardService.mintSBT(userAddress, signer);
+        console.log('Claiming SBT...');
+        const sbtResult = await RewardService.mintSBT(userAddress);
         if (sbtResult.success) {
           setClaimedRewards(prev => ({ ...prev, sbt: true }));
         }
@@ -143,6 +144,7 @@ const PrizePool = ({
           </div>
         </div>
       </div>
+      {/* <button onClick={() => RewardService.mintSBT(userAddress)}>mint test dob</button> */}
       {/* 领取按钮 */}
       <button
         onClick={handleClaimRewards}
