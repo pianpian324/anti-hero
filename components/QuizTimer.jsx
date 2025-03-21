@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 const QuizTimer = ({ duration = 10, onTimeout, isActive = true }) => {
   const [timeLeft, setTimeLeft] = useState(duration);
+  const timerRef = useRef(null);
+  const hasTimedOut = useRef(false);
 
   // 计算进度百分比
   const progress = (timeLeft / duration) * 100;
@@ -15,39 +17,42 @@ const QuizTimer = ({ duration = 10, onTimeout, isActive = true }) => {
     return 'from-red-500 to-red-600';
   }, [progress]);
 
+  // 清理计时器
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
   // 重置计时器
   useEffect(() => {
+    hasTimedOut.current = false;
+    setTimeLeft(duration);
+  }, [duration]);
+
+  // 处理活动状态变化
+  useEffect(() => {
+    clearTimer();
+    hasTimedOut.current = false;
+
     if (isActive) {
       setTimeLeft(duration);
-    }
-  }, [duration, isActive]);
-
-  // 计时器逻辑
-  useEffect(() => {
-    let timer;
-    
-    if (isActive) {
-      timer = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setTimeLeft((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(timer);
+          if (prevTime <= 1 && !hasTimedOut.current) {
+            clearTimer();
+            hasTimedOut.current = true;
             onTimeout?.();
             return 0;
           }
           return prevTime - 1;
         });
       }, 1000);
-    } else {
-      // 当计时器不活跃时，保持当前时间
-      clearInterval(timer);
     }
 
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, [isActive, onTimeout]);
+    return clearTimer;
+  }, [isActive, duration, onTimeout]);
 
   // 如果计时器不活跃，显示满进度条
   const displayProgress = isActive ? progress : 100;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import quizData from '@/data/quizQuestions.json';
 
 export function useQuiz() {
@@ -10,7 +10,8 @@ export function useQuiz() {
   const [score, setScore] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isTimerActive, setIsTimerActive] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(30); // 每题时间30秒
+  const [timeLeft, setTimeLeft] = useState(30);
+  const transitionTimeoutRef = useRef(null);
 
   // 初始化题目
   useEffect(() => {
@@ -36,33 +37,60 @@ export function useQuiz() {
     initQuestions();
   }, []);
 
+  // 清理定时器
+  const clearTransitionTimeout = useCallback(() => {
+    if (transitionTimeoutRef.current) {
+      clearTimeout(transitionTimeoutRef.current);
+      transitionTimeoutRef.current = null;
+    }
+  }, []);
+
+  // 自动跳转到下一题
+  const autoAdvance = useCallback(() => {
+    clearTransitionTimeout();
+    
+    transitionTimeoutRef.current = setTimeout(() => {
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setIsTimerActive(true);
+        setTimeLeft(30);
+      }
+      clearTransitionTimeout();
+    }, 600);
+  }, [currentQuestionIndex, questions.length, clearTransitionTimeout]);
+
   // 处理答案选择
-  const handleAnswerSelect = (questionId, selectedOption) => {
+  const handleAnswerSelect = useCallback((questionId, selectedOption) => {
     setSelectedAnswers(prev => ({
       ...prev,
       [questionId]: selectedOption
     }));
-    setIsTimerActive(false); // 选择答案后停止计时器
-  };
+    setIsTimerActive(false);
+    autoAdvance();
+  }, [autoAdvance]);
 
   // 处理超时
-  const handleTimeout = () => {
+  const handleTimeout = useCallback(() => {
     const currentQuestion = questions[currentQuestionIndex];
     if (currentQuestion && !selectedAnswers[currentQuestion.id]) {
-      // 超时自动记录为未答题
-      handleAnswerSelect(currentQuestion.id, null);
+      setSelectedAnswers(prev => ({
+        ...prev,
+        [currentQuestion.id]: null
+      }));
+      setIsTimerActive(false);
+      autoAdvance();
     }
-  };
+  }, [currentQuestionIndex, questions, selectedAnswers, autoAdvance]);
 
   // 检查答案是否正确
-  const checkAnswer = (questionId, selectedOption) => {
-    if (!selectedOption) return false; // 超时或未答题算错误
+  const checkAnswer = useCallback((questionId, selectedOption) => {
+    if (!selectedOption) return false;
     const question = questions.find(q => q.id === questionId);
     return question?.correctAnswer === selectedOption;
-  };
+  }, [questions]);
 
   // 计算当前得分
-  const calculateScore = () => {
+  const calculateScore = useCallback(() => {
     let totalScore = 0;
     Object.entries(selectedAnswers).forEach(([questionId, answer]) => {
       if (checkAnswer(Number(questionId), answer)) {
@@ -71,41 +99,43 @@ export function useQuiz() {
     });
     setScore(totalScore);
     return totalScore;
-  };
+  }, [selectedAnswers, checkAnswer]);
 
   // 移动到下一题
-  const nextQuestion = () => {
+  const nextQuestion = useCallback(() => {
+    clearTransitionTimeout();
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setIsTimerActive(true); // 重新激活计时器
-      setTimeLeft(30); // 重置时间
+      setIsTimerActive(true);
+      setTimeLeft(30);
       return true;
     }
     return false;
-  };
+  }, [currentQuestionIndex, questions.length, clearTransitionTimeout]);
 
   // 移动到上一题
-  const previousQuestion = () => {
+  const previousQuestion = useCallback(() => {
+    clearTransitionTimeout();
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
-      setIsTimerActive(false); // 查看已答题目时停止计时器
+      setIsTimerActive(false);
       return true;
     }
     return false;
-  };
+  }, [currentQuestionIndex, clearTransitionTimeout]);
 
   // 获取当前题目
-  const getCurrentQuestion = () => {
+  const getCurrentQuestion = useCallback(() => {
     return questions[currentQuestionIndex];
-  };
+  }, [questions, currentQuestionIndex]);
 
   // 获取当前进度
-  const getProgress = () => {
+  const getProgress = useCallback(() => {
     return {
       current: currentQuestionIndex + 1,
       total: questions.length
     };
-  };
+  }, [currentQuestionIndex, questions.length]);
 
   // 计时器
   useEffect(() => {
@@ -122,7 +152,14 @@ export function useQuiz() {
     return () => {
       clearInterval(timer);
     };
-  }, [isTimerActive, timeLeft]);
+  }, [isTimerActive, timeLeft, handleTimeout]);
+
+  // 清理副作用
+  useEffect(() => {
+    return () => {
+      clearTransitionTimeout();
+    };
+  }, [clearTransitionTimeout]);
 
   return {
     isLoading,

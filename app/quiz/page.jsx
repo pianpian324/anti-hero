@@ -103,7 +103,7 @@ export default function QuizGame() {
                 </div>
               </div>
               <QuizTimer 
-                duration={10} 
+                duration={6} 
                 onTimeout={handleTimeout}
                 isActive={isTimerActive && !selectedAnswers[currentQuestion?.id]}
               />
