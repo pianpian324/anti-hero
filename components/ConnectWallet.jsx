@@ -12,6 +12,7 @@ const ConnectWallet = () => {
     const [balance, setBalance] = useState("");
     const [address, setAddress] = useState("");
     const signer = ccc.useSigner();
+    const [isFirstMount, setIsFirstMount] = useState(true);
 
     useEffect(() => {
         if (!signer) {
@@ -28,20 +29,29 @@ const ConnectWallet = () => {
             setBalance(ccc.fixedPointToString(capacity));
         })();
 
-        // 当钱包连接成功后跳转到dashboard页面
-        if (wallet) {
+        // 仅在钱包首次连接时跳转
+        if (wallet && isFirstMount) {
+            setIsFirstMount(false);
             router.push('/dashboard');
         }
 
         return () => {};
-    }, [signer, router, wallet]);
+    }, [signer, router, wallet, isFirstMount]);
+
+    const handleConnect = async () => {
+        try {
+            await open();
+        } catch (error) {
+            console.error('Connect failed:', error);
+        }
+    };
 
     const renderConnectWalletBtn = () => {
         return (
             <div className="flex justify-center w-full">
                 <button 
                     className="cursor-pointer rounded-full border-2 border-solid border-white/80 transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base font-bold h-10 sm:h-12 px-8 sm:px-10"
-                    onClick={open}
+                    onClick={handleConnect}
                 >
                     Connect Wallet
                 </button>
@@ -54,7 +64,7 @@ const ConnectWallet = () => {
             <div className="flex justify-center w-full">
                 <button 
                     className="cursor-pointer rounded-full border-2 border-solid border-white/80 transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:px-8"
-                    onClick={open}
+                    onClick={handleConnect}
                 >
                     <div className="rounded-full mr-2">
                         {wallet && <img src={wallet.icon} alt="avatar" className="w-6 h-6" />}
@@ -64,7 +74,7 @@ const ConnectWallet = () => {
                             {balance} CKB
                         </h2>
                         <p className="text-xs flex items-center gap-2">
-                            {truncateAddress(address, 10, 6)}
+                            {truncateAddress(address)}
                         </p>
                     </div>
                 </button>
@@ -73,8 +83,8 @@ const ConnectWallet = () => {
     }
 
     return (
-        <div className="flex justify-center w-full">
-            {wallet ? renderConnectedWalletInfo() : renderConnectWalletBtn()}
+        <div className="w-full">
+            {!wallet ? renderConnectWalletBtn() : renderConnectedWalletInfo()}
         </div>
     );
 };
