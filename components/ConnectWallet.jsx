@@ -4,60 +4,87 @@
 import React, { useEffect, useState } from "react";
 import { ccc } from "@ckb-ccc/connector-react";
 import { truncateAddress } from "../utils/stringUtils";
+import { useRouter } from 'next/navigation';
 
 const ConnectWallet = () => {
+    const router = useRouter();
     const { open, wallet } = ccc.useCcc();
     const [balance, setBalance] = useState("");
     const [address, setAddress] = useState("");
     const signer = ccc.useSigner();
+    const [isFirstMount, setIsFirstMount] = useState(true);
 
     useEffect(() => {
         if (!signer) {
             return;
-          }
+        }
       
-          (async () => {
+        (async () => {
             const addr = await signer.getRecommendedAddress();
             setAddress(addr);
-          })();
+        })();
 
-          (async () => {
+        (async () => {
             const capacity = await signer.getBalance();
             setBalance(ccc.fixedPointToString(capacity));
-          })();
+        })();
 
-        return () => {
-            
-        };
-    }, [signer]);
+        // 仅在钱包首次连接时跳转
+        if (wallet && isFirstMount) {
+            setIsFirstMount(false);
+            router.push('/dashboard');
+        }
+
+        return () => {};
+    }, [signer, router, wallet, isFirstMount]);
+
+    const handleConnect = async () => {
+        try {
+            await open();
+        } catch (error) {
+            console.error('Connect failed:', error);
+        }
+    };
 
     const renderConnectWalletBtn = () => {
-        return <div className="cursor-pointer rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base font-bold h-10 sm:h-12 px-4 sm:px-5"
-            onClick={open} >
-            Connect Wallet
-        </div>
+        return (
+            <div className="flex justify-center w-full">
+                <button 
+                    className="cursor-pointer rounded-full border-2 border-solid border-white/80 transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base font-bold h-10 sm:h-12 px-8 sm:px-10"
+                    onClick={handleConnect}
+                >
+                    Connect Wallet
+                </button>
+            </div>
+        );
     }
 
     const renderConnectedWalletInfo = () => {
-        return <div className="cursor-pointer rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-        onClick={open} >
-            <div className="rounded-full mr-2">
-          {wallet && <img src={wallet.icon} alt="avatar" className="w-6 h-6" />}
-        </div>
-        <div>
-          <h2 className="text-sm font-semibold">
-            {balance} CKB
-          </h2>
-          <p className="text-xs flex items-center gap-2">
-            {truncateAddress(address, 10, 6)}
-          </p>
-        </div>
-    </div>
+        return (
+            <div className="flex justify-center w-full">
+                <button 
+                    className="cursor-pointer rounded-full border-2 border-solid border-white/80 transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:px-8"
+                    onClick={handleConnect}
+                >
+                    <div className="rounded-full mr-2">
+                        {wallet && <img src={wallet.icon} alt="avatar" className="w-6 h-6" />}
+                    </div>
+                    <div>
+                        <h2 className="text-sm font-semibold">
+                            {balance} CKB
+                        </h2>
+                        <p className="text-xs flex items-center gap-2">
+                            {truncateAddress(address)}
+                        </p>
+                    </div>
+                </button>
+            </div>
+        );
     }
 
     return (
-        <div className="flex">
-            {wallet ? renderConnectedWalletInfo() : renderConnectWalletBtn()}
+        <div className="w-full">
+            {!wallet ? renderConnectWalletBtn() : renderConnectedWalletInfo()}
         </div>
     );
 };
