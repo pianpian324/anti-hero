@@ -48,17 +48,21 @@ const UserProfile = () => {
     }
 
     return (
-        <div className="absolute top-4 right-4 flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-foreground/10 rounded-full px-4 py-2">
+        <div className="flex items-center gap-3 h-9">
+            <div className="flex items-center gap-2 rounded-lg px-2 py-1">
                 <img src={wallet.icon} alt="Wallet Icon" className="w-6 h-6 rounded-full" />
                 <div className="text-sm">
-                    <div className="font-semibold">{balance} CKB</div>
-                    <div className="text-xs opacity-80">{truncateAddress(address)}</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                        {balance} CKB
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {truncateAddress(address)}
+                    </div>
                 </div>
             </div>
             <button
                 onClick={handleLogout}
-                className="text-sm px-4 py-2 rounded-full border-2 border-white/80 hover:bg-white/10 transition-colors"
+                className="text-sm h-9 px-3 rounded-lg"
             >
                 Logout
             </button>

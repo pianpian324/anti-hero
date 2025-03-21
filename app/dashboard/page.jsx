@@ -4,6 +4,7 @@ import React from 'react';
 import UserProfile from '@/components/UserProfile';
 import { ccc } from "@ckb-ccc/connector-react";
 import { useRouter } from 'next/navigation';
+import { Header, Footer } from '@/components/SharedLayout';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -32,10 +33,16 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 relative">
-      {/* 用户信息 */}
-      <UserProfile />
+      <div className="bg-white dark:bg-gray-800 shadow-sm">
+        <div className="max-w-7xl mx-auto">
+          <Header />
+          <div className="absolute top-4 right-4">
+            <UserProfile />
+          </div>
+        </div>
+      </div>
 
-      <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto p-8 pt-20">
+      <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto p-8 pt-16">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Welcome to Web5 Quiz
@@ -95,6 +102,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
