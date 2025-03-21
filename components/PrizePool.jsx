@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { RewardService } from '@/services/rewardService';
 import { ccc } from '@ckb-ccc/connector-react';
+import MintSuccessModal from './MintSuccessModal';
 
 const PrizePool = ({
   currentScore = 0,
@@ -16,6 +17,11 @@ const PrizePool = ({
     sbt: false,
     ckb: false,
     nft: false
+  });
+  const [mintModal, setMintModal] = useState({
+    isOpen: false,
+    transactionHash: '',
+    sbtImage: ''
   });
 
   // 初始化已领取状态
@@ -41,6 +47,11 @@ const PrizePool = ({
         const sbtResult = await RewardService.mintSBT(userAddress);
         if (sbtResult.success) {
           setClaimedRewards(prev => ({ ...prev, sbt: true }));
+          setMintModal({
+            isOpen: true,
+            transactionHash: sbtResult.txHash,
+            sbtImage: sbtResult.imageUrl || '/sbt-image.png' // 使用返回的图片URL或默认图片
+          });
         }
       }
 
@@ -178,6 +189,14 @@ const PrizePool = ({
           'Complete the quiz with high scores to earn exclusive rewards!'
         )}
       </p>
+
+      {/* Mint Success Modal */}
+      <MintSuccessModal 
+        isOpen={mintModal.isOpen}
+        onClose={() => setMintModal(prev => ({ ...prev, isOpen: false }))}
+        transactionHash={mintModal.transactionHash}
+        sbtImage={mintModal.sbtImage}
+      />
     </div>
   );
 };
