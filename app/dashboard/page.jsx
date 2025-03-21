@@ -91,15 +91,24 @@ export default function Dashboard() {
 
           <div className="quiz-card p-6">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              Quick Actions
+              Game Settings
             </h2>
-            <button 
-              onClick={() => router.push('/quiz')}
-              className="w-full px-4 py-2 bg-foreground text-background rounded-lg hover:bg-opacity-90 transition-colors"
-            >
-              Start New Game
-            </button>
+            <div className="space-y-2 text-gray-600 dark:text-gray-400">
+              <p>Difficulty: Normal</p>
+              <p>Time Limit: 30s</p>
+              <p>Questions: 10</p>
+            </div>
           </div>
+        </div>
+
+        {/* 开始游戏按钮 */}
+        <div className="w-full flex justify-end mt-4">
+          <button 
+            onClick={() => router.push('/quiz')}
+            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:opacity-90 transition-opacity font-semibold shadow-lg hover:shadow-xl"
+          >
+            Start New Game
+          </button>
         </div>
       </div>
       <Footer />
