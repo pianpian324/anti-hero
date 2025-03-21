@@ -198,6 +198,7 @@ export default function QuizGame() {
               currentScore={score}
               totalPrizePool={100}
               minScoreRequired={100}
+              userAddress={address}
             />
           </div>
         </div>
