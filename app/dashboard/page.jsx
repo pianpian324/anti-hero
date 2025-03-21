@@ -111,29 +111,20 @@ export default function Dashboard() {
             <div className="flex flex-col space-y-4">
               <div className="flex items-center gap-3">
                 <button 
-                  onClick={() => document.getElementById('fileInput').click()} 
+                  onClick={() => router.push('/knowledge')}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   <img src="/file.svg" alt="file icon" className="w-5 h-5" />
                   知识库
                 </button>
-                <input
-                  type="file"
-                  id="fileInput"
-                  style={{ display: 'none' }}
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      console.log('Selected file:', file);
-                    }
-                  }}
-                />
               </div>
               
-              <div className="flex flex-col space-y-2">
-                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                  选AI模型
-                </label>
+              <div className="flex flex-col">
+                <div className="flex items-center h-9 mb-2">
+                  <label className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    选AI模型
+                  </label>
+                </div>
                 <select className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                   <option>神经二狗LLM</option>
                   <option>通义千问</option>
@@ -143,10 +134,12 @@ export default function Dashboard() {
                 </select>
               </div>
               
-              <div className="flex flex-col space-y-2">
-                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                  AI玩家数量
-                </label>
+              <div className="flex flex-col">
+                <div className="flex items-center h-9 mb-2">
+                  <label className="text-2xl font-semibold text-gray-900 dark:text-white">
+                    AI玩家数量
+                  </label>
+                </div>
                 <input
                   type="number"
                   min="0"
