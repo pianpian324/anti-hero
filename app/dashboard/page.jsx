@@ -54,17 +54,17 @@ export default function Dashboard() {
 
         {/* 玩家头像 */}
         <div className="flex flex-col items-center gap-4 my-8">
-          <div 
+          <div
             className="w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold text-white overflow-hidden"
-            style={{ 
+            style={{
               backgroundColor: getRandomColor(address),
               boxShadow: '0 0 20px rgba(255, 255, 255, 0.2)'
             }}
           >
             {wallet?.icon ? (
-              <img 
-                src={wallet.icon} 
-                alt="Player Avatar" 
+              <img
+                src={wallet.icon}
+                alt="Player Avatar"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -154,7 +154,7 @@ export default function Dashboard() {
 
         {/* 开始游戏按钮 */}
         <div className="w-full flex justify-end mt-4">
-          <button 
+          <button
             onClick={() => router.push('/quiz')}
             className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:opacity-90 transition-opacity font-semibold shadow-lg hover:shadow-xl"
           >
