@@ -12,9 +12,13 @@
     "@ckb-ccc/ccc": "^1.1.6",
     "@ckb-ccc/connector-react": "^1.0.0",
     "@ckb-ccc/core": "^1.5.3",
+    "@tailwindcss/typography": "^0.5.16",
+    "@uiw/react-md-editor": "^4.0.5",
     "next": "14.2.18",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "eslint": "^8",
