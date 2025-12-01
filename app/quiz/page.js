@@ -1,21 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ccc } from "@ckb-ccc/connector-react";
 import QuestionCard from '@/components/quiz/QuestionCard';
 import Timer from '@/components/quiz/Timer';
 import Leaderboard from '@/components/quiz/Leaderboard';
 import QuizTypeSelector from '@/components/quiz/QuizTypeSelector';
 import ResultDetails from '@/components/quiz/ResultDetails';
-import { ConnectWallet } from '@/components/ConnectWallet';
+import ConnectWallet from '@/components/ConnectWallet';
 
 export default function QuizPage() {
+  const { wallet } = ccc.useCcc();
   const [gameState, setGameState] = useState('idle'); // idle, selecting, playing, finished
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [quizType, setQuizType] = useState(null);
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [totalTime, setTotalTime] = useState(0);
-  const [isConnected, setIsConnected] = useState(false);
+
 
   // Mock questions - will be replaced with Web5 DWN data
   const mockQuestions = {
@@ -130,7 +132,7 @@ export default function QuizPage() {
         <div className="mt-8">
           {gameState === 'idle' && (
             <>
-              {isConnected ? (
+              {wallet ? (
                 <div className="space-y-8">
                   <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
                     Select Quiz Type
